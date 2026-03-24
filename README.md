@@ -1,5 +1,7 @@
 # StreamLinker ZLM SDK
 
+English | [简体中文](README.zh-CN.md)
+
 Shared Java SDK for StreamLinker projects to access ZLMediaKit HTTP APIs.
 
 `streamlinker-zlm-sdk` is the shared infrastructure repository used by:
