@@ -4,19 +4,27 @@
 
 `streamlinker-zlm-sdk` 是 StreamLinker 项目用于访问 ZLMediaKit HTTP API 的共享 Java SDK。
 
-当前这个仓库会被以下项目复用：
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-17+-orange.svg)](#构建)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
+
+## 项目定位
+
+这个仓库是 StreamLinker 的共享基础设施仓库，用来提供一层轻量的 ZLMediaKit Java 封装。
+它的目标是同时服务于边缘侧和云端侧项目，而不是承载具体业务语义。
+
+当前使用方包括：
 - [streamlinker-edge](https://github.com/StreamLinker/streamlinker-edge)
 - `streamlinker-cloud`（开发中）
 
-## 目标
+## 设计目标
 
-这个仓库提供一层轻量的 Java 封装，用来对接 ZLMediaKit 官方 HTTP API。
-
-设计原则：
-- 接口契约尽量贴近 ZLMediaKit 官方 HTTP API
-- 不把业务概念混入 SDK
-- 让 edge 和 cloud 可以复用同一套 SDK
+这个 SDK 的设计原则是：
+- 尽量贴近 ZLMediaKit 官方 HTTP API 契约
+- 不把业务概念混入 SDK 层
+- 为 StreamLinker 服务提供清晰的 Java 客户端接口
 - 支持 Spring Boot 自动装配
+- 随着 StreamLinker 的实际需求逐步扩展
 
 ## 模块
 
@@ -29,23 +37,23 @@ streamlinker-zlm-sdk/
 
 ### streamlinker-zlm-model
 
-用于承载 ZLMediaKit API 的请求和响应模型。
+承载 ZLMediaKit API 的请求和响应模型。
 
-当前已覆盖的模型包括：
+当前已覆盖：
 - `addFFmpegSource`
 - `addStreamProxy`
 - `addStreamPusherProxy`
-- 通用响应结构
-- 基础流信息和播放地址响应
+- 通用响应结构模型
+- 媒体信息和播放地址响应模型
 
 ### streamlinker-zlm-api
 
-客户端 Java API 层。
+Java 客户端 API 层。
 
 当前职责：
 - 封装对 ZLMediaKit 的 HTTP 请求
 - 自动注入 `secret`
-- 对外暴露类型化的 Java 调用方法
+- 对外暴露当前所需的类型化 Java 方法
 
 ### streamlinker-zlm-spring-boot-starter
 
@@ -56,15 +64,30 @@ Spring Boot 集成层。
 - `ZlmAutoConfiguration`
 - 自动创建 `ZlmClient`
 
-## 当前状态
+## 当前实现状态
 
-当前仓库已经包含：
-- 核心请求与响应模型
+当前仓库已经实现：
+- 核心请求和响应模型
 - `DefaultZlmClient`
 - Spring Boot Starter 自动装配
-- 模型序列化和客户端契约测试
+- 模型序列化测试
+- 客户端契约测试
+
+## 当前 API 范围
+
+当前 SDK 主要覆盖 StreamLinker 已经使用到的那部分 ZLMediaKit API，重点包括：
+- 拉流源创建
+- 代理流创建
+- 推流代理创建
+- 媒体信息查询
+- 播放地址查询
+- 相关删除与控制操作
+
+后续不会一开始就把全部 ZLMediaKit API 一次性镜像完，而是随着 edge 和 cloud 的实际需要逐步补充。
 
 ## 使用示例
+
+依赖：
 
 ```xml
 <dependency>
@@ -74,12 +97,16 @@ Spring Boot 集成层。
 </dependency>
 ```
 
+配置：
+
 ```yaml
 streamlinker:
   zlm:
     base-url: http://127.0.0.1:80
     secret: your-secret
 ```
+
+注入方式：
 
 ```java
 @Service
@@ -95,6 +122,8 @@ public class DemoService {
 
 ## 构建
 
+运行测试：
+
 ```bash
 mvn test
 ```
@@ -105,7 +134,10 @@ mvn test
 mvn install
 ```
 
-## 说明
+## 后续计划
 
-这个 SDK 当前刻意保持轻量，只覆盖 StreamLinker 现阶段真正需要的一部分 ZLMediaKit API。
-后续会随着 edge 和 cloud 的演进，逐步补充更多接口。
+下一步建议包括：
+- 随着 edge 和 cloud 演进逐步扩展 API 覆盖面
+- 完善接入说明和示例文档
+- 明确制品发布和版本策略
+- 补充 ZLMediaKit 版本兼容性说明
